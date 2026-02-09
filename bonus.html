@@ -1,49 +1,39 @@
-
 <!-- ================= bonus.html ================= -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Бонусы — CS2 RENT</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header>
+
+<header class="header">
   <div class="logo">CS2 RENT</div>
-  <nav>
-    <a href="index.html">Главная</a>
+  <nav class="nav">
+    <a href="Main.html">Главная</a>
     <a href="rent.html">Аренда</a>
-    <a href="bonus.html">Бонусы</a>
-  </nav>
+    <a href="bonus.html" class="active">Бонусы</a>
+    <a href="info.html">Информация</a>
+  </nav>  
 </header>
 
-<main>
-  <h2 class="section-title">Рулетка скидок</h2>
+<main class="container">
+  <h1 class="title">Полоска скидок</h1>
 
-  <div class="roulette-wrapper">
-    <div class="pointer"></div>
-    <div id="roulette" class="roulette">
-      <span>5%</span>
-      <span>10%</span>
-      <span>15%</span>
-      <span>20%</span>
-      <span>25%</span>
-      <span>50%</span>
-    </div>
+  <div class="slot-wrapper">
+    <div class="slot-pointer"></div>
+    <div id="slotLine" class="slot-line"></div>
   </div>
 
   <button id="spinBtn" class="spin-btn">Крутить</button>
-  <p id="result" class="result"></p>
+  <div id="result" class="result"></div>
 </main>
 
 <script>
-let spinning = false;
-const spinBtn = document.getElementById('spinBtn');
-const roulette = document.getElementById('roulette');
-const result = document.getElementById('result');
-const prizes = [
-  { label: '5%',  chance: 35 },
+const items = [
+  { label: '5%', chance: 35 },
   { label: '10%', chance: 25 },
   { label: '15%', chance: 18 },
   { label: '20%', chance: 12 },
@@ -51,46 +41,61 @@ const prizes = [
   { label: '50%', chance: 2 }
 ];
 
-const savedWin = localStorage.getItem('roulette_win');
-if (savedWin) {
-  result.textContent = `🎉 Твоя скидка: ${savedWin}`;
+const slotLine = document.getElementById('slotLine');
+const spinBtn = document.getElementById('spinBtn');
+const result = document.getElementById('result');
+
+// Получаем время последнего спина из localStorage
+let lastSpin = localStorage.getItem('roulette_lastSpin');
+let now = Date.now();
+const hours48 = 48 * 60 * 60 * 1000; // 48 часов в миллисекундах
+
+if (lastSpin && now - lastSpin < hours48) {
+  // Если с последнего спина прошло меньше 48 часов
   spinBtn.disabled = true;
-  spinBtn.textContent = 'Уже использовано';
+  spinBtn.textContent = 'Доступно через 48 часов';
+  result.textContent = '🎉 Твоя скидка: ' + localStorage.getItem('roulette_win');
 }
 
+// Формируем последовательность рулетки
+let sequence = [];
+items.forEach(item => {
+  for (let i = 0; i < item.chance; i++) sequence.push(item.label);
+});
+sequence = sequence.concat(sequence, sequence);
+
+sequence.forEach(label => {
+  const el = document.createElement('div');
+  el.className = 'slot-item';
+  el.textContent = label;
+  slotLine.appendChild(el);
+});
+
+// Обработчик кнопки
 spinBtn.addEventListener('click', () => {
-  if (spinning || savedWin) return;
-  spinning = true;
+  // Проверка на таймер
+  if (lastSpin && now - lastSpin < hours48) return;
 
-  const sector = 360 / prizes.length;
+  spinBtn.disabled = true;
 
-// взвешенный рандом
-const rand = Math.random() * 100;
-let cumulative = 0;
-let index = 0;
+  const index = Math.floor(Math.random() * sequence.length);
+  const itemWidth = 132;
+  const offset = index * itemWidth;
 
-for (let i = 0; i < prizes.length; i++) {
-  cumulative += prizes[i].chance;
-  if (rand <= cumulative) {
-    index = i;
-    break;
-  }
-}
-
-const angle = 360 * 8 + index * sector + sector / 2;
-
-  roulette.style.transform = `rotate(${angle}deg)`;
+  slotLine.style.transform = `translateX(-${offset}px)`;
 
   setTimeout(() => {
-    const win = prizes[index].label;
+    const win = sequence[index];
     result.textContent = `🎉 Твоя скидка: ${win}`;
+
+    // Сохраняем время последнего спина
+    localStorage.setItem('roulette_lastSpin', Date.now());
     localStorage.setItem('roulette_win', win);
-    spinBtn.disabled = true;
-    spinBtn.textContent = 'Уже использовано';
-    spinning = false;
-  }, 5000);
+  }, 4500);
 });
+
 </script>
+
 </body>
 </html>
 
