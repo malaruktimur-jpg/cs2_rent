@@ -29,7 +29,7 @@
     }
 
     nav {
-      margin-left: 48px;
+      margin-left: 38px;
       display: flex;
       gap: 28px;
     }
@@ -311,5 +311,6 @@ body {
 .spin-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .result { margin-top: 20px; font-size: 18px; }
+
 
 
