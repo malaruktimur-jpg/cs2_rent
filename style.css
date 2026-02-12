@@ -201,7 +201,7 @@ body {
       height: 72px;
       display: flex;
       align-items: center;
-      padding: 0 48px;
+      padding: 0 20px;
       background: linear-gradient(90deg, rgba(3,22,51,.9), rgba(3,22,51,.4));
       backdrop-filter: blur(6px);
       position: fixed;
@@ -217,7 +217,7 @@ body {
     }
 
     nav {
-      margin-left: 48px;
+      margin-left: 18px;
       display: flex;
       gap: 28px;
     }
@@ -311,6 +311,7 @@ body {
 .spin-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .result { margin-top: 20px; font-size: 18px; }
+
 
 
 
